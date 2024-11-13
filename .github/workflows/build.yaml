@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout
       - id: get-project
         name: Get project name
         run: echo "::set-output name=PROJECT::$(cat project-to-build)"
@@ -21,7 +21,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact
         with:
           name: my-build-apk
           path: ./**/*.apk
