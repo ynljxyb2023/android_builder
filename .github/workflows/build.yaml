@@ -7,22 +7,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v3       
+      - name: Checkout code
+        uses: actions/checkout@v3
+    
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
       - id: get-project
         name: Get project name
-        run: echo "::set-output name=PROJECT::$(cat project-to-build)"
+        run: echo "PROJECT=$(cat project-to-build)" >> $GITHUB_ENV
+
       - name: Clone project
-        run: git clone --depth=1 ${{ steps.get-project.outputs.PROJECT }} project
+        run: git clone --depth=1 ${{ env.PROJECT }} project
+
       - name: Build the app
-        working-directory: ./project
+        working-directory: './project'
         run: |
-          if [ ! -f "gradlew" ]; then gradle wrapper; fi
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper
+          fi
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
+
       - name: Upload APK
-        uses:  actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: my-build-apk
           path: ./**/*.apk
-
